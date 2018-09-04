@@ -7,13 +7,13 @@
     "lib": "lib"
   },
   "dependencies": {
-    "describe": "^1.2.0",
     "mocha": "^5.2.0"
   },
   "scripts": {
-    "test": "mocha index.js"
+    "test": "mocha index.js",
+    "server": "node  server/index.js --experimental-modules--watch"
   },
   "devDependencies": {},
-  "author": "",
+  "author": "AlanSean",
   "license": "ISC"
 }
