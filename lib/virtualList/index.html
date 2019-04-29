@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>虚拟列表</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        div{
+            width: 700px;
+            height: 600px;
+            overflow-x: hidden;
+            margin: 0 auto;
+            background-color: #ccc;
+        }
+        ul{
+            position: relative;
+            width: 100%;
+            min-height: 1200px;
+        }
+        li{
+            position: absolute;
+            height: 30px;
+            line-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <ul>
+        </ul>
+    </div>
+</body>
+<script>
+    const $ = id => document.querySelector(id);
+
+    class Watcher {
+        constructor(arr){
+            this.arr = arr;
+            this.data = [];
+            this.lis = [];
+            this.liHeight = 30; //元素高度
+            this.record = {
+                clientDomNum: 0,//可渲染区域有多少列
+                star: 0, //开始
+                end: 0 //结束
+            }
+            this.observer();
+           
+        }
+
+        
+        
+        init(){
+            let ul = $('ul'),
+                div = $('div'),
+                that = this;
+            ul.style.height = this.arr.length*this.liHeight + 'px';
+
+            that.record.clientDomNum = Math.ceil(div.clientHeight/this.liHeight)+5;//计算可视区域后加上几个 过渡好一点
+            this.data = this.arr.slice(that.record.star,this.record.end+this.record.clientDomNum);
+           
+            div.addEventListener('scroll',function(){
+                that.record.star = Math.floor(this.scrollTop/that.liHeight);//向上浮动获取值
+                that.data = that.arr.slice(that.record.star,that.record.star+that.record.clientDomNum);
+            });
+        }
+        observer () {
+
+            var that = this,data = that.data,ul = $('ul');
+            Object.defineProperty(this,'data',{
+                get: function(){
+                    return data;
+                },
+                set: function(newval) {
+                    data = newval;
+                    that.record.end = that.record.star+newval.length;//避免多余的遍历
+                    that.domUpdate(ul);
+                }
+            })
+
+            this.init();
+        }
+        domUpdate(ul){
+            let li,
+                length = this.data.length,
+                {star,end} = this.record;
+               
+            for(star;star < end;star++){
+                
+                if(this.lis.length<this.record.clientDomNum){
+                    li = document.createElement('li');
+                    this.lis[star] = li;
+                    ul.appendChild(li);
+                } else {
+                    li = this.lis[star%this.record.clientDomNum];
+                }
+                li.innerHTML = `index${star}`;
+                li.style.top = `${star* this.liHeight}px`;//有外边距需要自己加上外边距
+            }
+            
+        }
+    }
+    const watcher = new Watcher(new Array(1000000).fill({name:true}));
+    
+</script>
+</html>
