@@ -11,13 +11,15 @@ const {
 
 var libFilePath = path.resolve('./lib');
 var lib,liext;
-
+console.log(libFilePath)
 fs.readdir(libFilePath,(err,files) =>{
+
     if(err) {
-        console.warn(err)
+        console.log(err)
     } else {
         lib = files;
     }
+
 })
 
 var param = {
@@ -95,9 +97,4 @@ var server = http.createServer((req,res)=>{
                     }
                 })
         }
-
-
-
-
-
-}).listen(8100)
+}).listen(811)
